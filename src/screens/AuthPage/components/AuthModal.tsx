@@ -8,6 +8,9 @@ import {
 } from '@/components/ui/dialog';
 import LoginForm, { type LoginFormData } from './LoginForm';
 import SignupForm, { type SignupFormData } from './SignupForm';
+import { logIn, signUp } from '@/api/user';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 type AuthMode = 'login' | 'signup';
 
@@ -22,15 +25,24 @@ export default function AuthModal({
   onOpenChange, 
   defaultMode = 'login' 
 }: AuthModalProps) {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<AuthMode>(defaultMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const { mutateAsync: loginAsync } = logIn(
+    () => toast.success('Login successful!'),
+    () => toast.error('Login failed!')
+  );
+  const { mutateAsync: signupAsync } = signUp(
+    () => toast.success('Signup successful!'),
+    () => toast.error('Signup failed!')
+  );
   const handleLogin = async (data: LoginFormData) => {
     setIsSubmitting(true);
     try {
-      // TODO: Implement login logic
-      console.log('Login data:', data);
+      const response = await loginAsync(data);
+      console.log('Login response:', response);
       onOpenChange(false);
+      navigate('/');
     } catch (error) {
       console.error('Login error:', error);
     } finally {
@@ -41,9 +53,10 @@ export default function AuthModal({
   const handleSignup = async (data: SignupFormData) => {
     setIsSubmitting(true);
     try {
-      // TODO: Implement signup logic
-      console.log('Signup data:', data);
-      onOpenChange(false);
+      const { confirmPassword: _, ...userData } = data;
+      const response = await signupAsync(userData);
+      console.log('Signup response:', response);
+      setMode('login' as AuthMode);
     } catch (error) {
       console.error('Signup error:', error);
     } finally {

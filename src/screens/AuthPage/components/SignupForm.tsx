@@ -14,7 +14,7 @@ import {
 
 const signupSchema = z
   .object({
-    name: z
+    user_name: z
       .string()
       .min(1, 'Name is required')
       .min(2, 'Name must be at least 2 characters'),
@@ -46,7 +46,7 @@ export default function SignupForm({ onSubmit, isSubmitting = false }: SignupFor
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      name: '',
+      user_name: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -62,15 +62,15 @@ export default function SignupForm({ onSubmit, isSubmitting = false }: SignupFor
       <form onSubmit={handleSubmit} className="space-y-4">
         <FormField
           control={form.control}
-          name="name"
+          name="user_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
                 <Input
                   type="text"
-                  placeholder="Your name"
-                  autoComplete="name"
+                  placeholder="Your username"
+                  autoComplete="username"
                   disabled={isSubmitting}
                   {...field}
                 />

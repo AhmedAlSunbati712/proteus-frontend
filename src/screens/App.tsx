@@ -4,10 +4,14 @@ import HomePage from '@/screens/HomePage';
 import AuthPage from '@/screens/AuthPage';
 import NotFoundPage from '@/screens/NotFoundPage';
 import { ROUTES } from '@/utils/constants';
+import { ToastContainer } from 'react-toastify';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export default function App() {
   return (
+    <AuthProvider>
     <BrowserRouter>
+      <ToastContainer />
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
@@ -16,5 +20,6 @@ export default function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
