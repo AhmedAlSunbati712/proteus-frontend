@@ -8,6 +8,17 @@ interface LoginInfo {
     email: string;
     password: string;
 }
+
+export const getUser = () => {
+    return useQuery({
+        queryKey: [USER_QUERY_KEY],
+        queryFn: async () => {
+            const response = await axios.get("/user");
+            return response.data;
+        },
+    });
+}
+
 export const signUp = (onSuccess?: () => void, onError?: () => void) => {
     const queryClient = useQueryClient();
     return useMutation({
@@ -58,9 +69,9 @@ export const logOut = (onSuccess?: () => void, onError?: () => void) => {
             console.error(error);
             if (onError) onError;
         },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY] });
-            if (onSuccess) onSuccess;
+        onSuccess: () => {
+            queryClient.setQueryData([USER_QUERY_KEY], null);
+            if (onSuccess) onSuccess();
         }
     })
 }

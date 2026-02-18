@@ -1,9 +1,12 @@
 import { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/utils/constants';
+import { useAuth } from '@/contexts/AuthContext';
+import { logOut } from '@/api/user';
+import { toast } from 'react-toastify';
 
 interface NavItem {
   label: string;
@@ -28,6 +31,13 @@ export default function HomeNavBar({
   className 
 }: HomeNavBarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const navigate = useNavigate();
+  const { user, isLoading, isError, refetch } = useAuth();
+  const { mutateAsync: logoutAsync } = logOut(
+    () => toast.success('Logged out successfully!'),
+    () => toast.error('Failed to log out!')
+  );
 
   const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(prev => !prev);
@@ -36,6 +46,19 @@ export default function HomeNavBar({
   const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false);
   }, []);
+
+  const handleLogout = useCallback(async () => {
+    setIsLoggingOut(true);
+    try {
+      await logoutAsync();
+      closeMobileMenu();
+      navigate(ROUTES.AUTH);
+    } catch {
+      // onError callback handles toast
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }, [logoutAsync, closeMobileMenu, navigate]);
 
   return (
     <header 
@@ -84,20 +107,34 @@ export default function HomeNavBar({
 
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex md:items-center md:gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            asChild
-          >
-            <Link to={ROUTES.AUTH}>Log in</Link>
-          </Button>
-          <Button 
-            variant="default" 
-            size="sm"
-            asChild
-          >
-            <Link to={ROUTES.AUTH}>Sign up</Link>
-          </Button>
+          {!user && (
+            <>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  asChild
+                >
+                  <Link to={ROUTES.AUTH}>Log in</Link>
+                </Button>
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  asChild
+                >
+                  <Link to={ROUTES.AUTH}>Sign up</Link>
+                </Button>
+            </>
+          )}
+          {user && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? 'Logging out...' : 'Log out'}
+            </Button>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -169,22 +206,37 @@ export default function HomeNavBar({
           
           {/* Mobile Auth Buttons */}
           <div className="flex flex-col gap-2 pt-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              asChild
-              className="w-full"
-            >
-              <Link to={ROUTES.AUTH} onClick={closeMobileMenu}>Log in</Link>
-            </Button>
-            <Button 
-              variant="default" 
-              size="sm"
-              asChild
-              className="w-full"
-            >
-              <Link to={ROUTES.AUTH} onClick={closeMobileMenu}>Sign up</Link>
-            </Button>
+            {!user && (
+              <>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  asChild
+                  className="w-full"
+                >
+                  <Link to={ROUTES.AUTH} onClick={closeMobileMenu}>Log in</Link>
+                </Button>
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  asChild
+                  className="w-full"
+                >
+                  <Link to={ROUTES.AUTH} onClick={closeMobileMenu}>Sign up</Link>
+                </Button>
+              </>
+            )}
+            {user && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="w-full"
+              >
+                {isLoggingOut ? 'Logging out...' : 'Log out'}
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -5,10 +5,11 @@ import AuthPage from '@/screens/AuthPage';
 import NotFoundPage from '@/screens/NotFoundPage';
 import { ROUTES } from '@/utils/constants';
 import { ToastContainer } from 'react-toastify';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export default function App() {
   return (
-    
+    <AuthProvider>
     <BrowserRouter>
       <ToastContainer />
       <Routes>
@@ -19,5 +20,6 @@ export default function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
