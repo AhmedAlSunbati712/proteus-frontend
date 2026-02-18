@@ -4,10 +4,13 @@ import HomePage from '@/screens/HomePage';
 import AuthPage from '@/screens/AuthPage';
 import NotFoundPage from '@/screens/NotFoundPage';
 import { ROUTES } from '@/utils/constants';
+import { ToastContainer } from 'react-toastify';
 
 export default function App() {
   return (
+    
     <BrowserRouter>
+      <ToastContainer />
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />

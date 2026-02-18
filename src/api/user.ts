@@ -8,11 +8,12 @@ interface LoginInfo {
     email: string;
     password: string;
 }
-export const signUp = async (onSuccess?: () => void, onError?: () => void) => {
+export const signUp = (onSuccess?: () => void, onError?: () => void) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (user: Omit<User, "id">) => {
             const response = await axios.post("/user/signup", user);
+            console.log('Signup response:', response);
             return response.data;
         },
         onError: (error) => {
@@ -26,11 +27,12 @@ export const signUp = async (onSuccess?: () => void, onError?: () => void) => {
     });
 }
 
-export const logIn = async (onSuccess?: () => void, onError?: () => void) => {
+export const logIn = (onSuccess?: () => void, onError?: () => void) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (loginInfo: LoginInfo) => {
             const response = await axios.post("/user/login", loginInfo);
+            console.log('Login response:', response);
             return response.data;
         },
         onError: (error) => {
@@ -44,11 +46,12 @@ export const logIn = async (onSuccess?: () => void, onError?: () => void) => {
     })
 }
 
-export const logOut = async (onSuccess?: () => void, onError?: () => void) => {
+export const logOut = (onSuccess?: () => void, onError?: () => void) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async () => {
             const response = await axios.post("/user/logout");
+            console.log('Logout response:', response);
             return response.data;
         },
         onError: (error) => {
