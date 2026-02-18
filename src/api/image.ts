@@ -13,7 +13,7 @@ export const getPresignedUploadUrl = async (fileName: string, fileType: string) 
 
 export const getPresignedDownloadUrl = async (key: string) => {
     try {
-        const response = await axios.post("/images/presignedDownloadUrl");
+        const response = await axios.post("/images/presignedDownloadUrl", {key});
         return response.data;
     } catch (error) {
         console.error(error);
