@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { getVTONS } from "@/api/vton";
@@ -6,6 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/utils/constants";
 import type { VTON } from "@/types/vton";
+import FloatingAddButton from "./components/FloatingAddButton";
+import TryOnModal from "./components/TryOnModal";
 
 function getDateLabel(value: Date | string | undefined) {
   if (!value) return "Unknown date";
@@ -24,6 +27,7 @@ function normalizeVtons(data: unknown): VTON[] {
 
 export default function HistoryPage() {
   const { user, isLoading: isAuthLoading } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     data,
@@ -106,6 +110,9 @@ export default function HistoryPage() {
           ))}
         </div>
       )}
+
+      <FloatingAddButton onClick={() => setIsModalOpen(true)} />
+      <TryOnModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </div>
   );
 }
