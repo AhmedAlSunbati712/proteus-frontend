@@ -1,8 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import AuthModal from './components/AuthModal';
 
 export default function AuthPage() {
+  const [searchParams] = useSearchParams();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const modeParam = searchParams.get('mode');
+  const defaultMode = useMemo(
+    () => (modeParam === 'signup' ? 'signup' : 'login') as 'login' | 'signup',
+    [modeParam]
+  );
+
+  useEffect(() => {
+    if (modeParam === 'login' || modeParam === 'signup') {
+      setIsAuthModalOpen(true);
+    }
+  }, [modeParam]);
 
   return (
     <div className="flex min-h-[80vh] flex-col items-center justify-center px-4">
@@ -22,8 +35,10 @@ export default function AuthPage() {
       </div>
 
       <AuthModal 
+        key={defaultMode}
         open={isAuthModalOpen} 
-        onOpenChange={setIsAuthModalOpen} 
+        onOpenChange={setIsAuthModalOpen}
+        defaultMode={defaultMode}
       />
     </div>
   );

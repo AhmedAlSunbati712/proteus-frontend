@@ -155,10 +155,10 @@ export default function HomeNavBar({
             {!user && (
               <>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link to={ROUTES.AUTH}>Log in</Link>
+                  <Link to={`${ROUTES.AUTH}?mode=login`}>Log in</Link>
                 </Button>
                 <Button variant="default" size="sm" asChild>
-                  <Link to={ROUTES.AUTH}>Sign up</Link>
+                  <Link to={`${ROUTES.AUTH}?mode=signup`}>Sign up</Link>
                 </Button>
               </>
             )}
@@ -263,7 +263,7 @@ export default function HomeNavBar({
                   asChild
                   className="w-full"
                 >
-                  <Link to={ROUTES.AUTH} onClick={closeMobileMenu}>Log in</Link>
+                  <Link to={`${ROUTES.AUTH}?mode=login`} onClick={closeMobileMenu}>Log in</Link>
                 </Button>
                 <Button 
                   variant="default" 
@@ -271,7 +271,7 @@ export default function HomeNavBar({
                   asChild
                   className="w-full"
                 >
-                  <Link to={ROUTES.AUTH} onClick={closeMobileMenu}>Sign up</Link>
+                  <Link to={`${ROUTES.AUTH}?mode=signup`} onClick={closeMobileMenu}>Sign up</Link>
                 </Button>
               </>
             )}
