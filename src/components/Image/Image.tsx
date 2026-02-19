@@ -13,9 +13,11 @@ export default function Image({ key, className }: ImageProps) {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     useEffect(() => {
-        getPresignedDownloadUrl(key).then((url) => {
-            setImageUrl(url);
-        });
+        if (key || key != "") {
+            getPresignedDownloadUrl(key).then((url) => {
+                setImageUrl(url);
+            });
+        }
     }, [key]);
 
     return imageUrl ? (
