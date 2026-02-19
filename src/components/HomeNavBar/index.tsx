@@ -162,21 +162,25 @@ export default function HomeNavBar({
                 </Button>
               </>
             )}
-            {user && (
-              <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to={ROUTES.HISTORY}>History</Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                >
-                  {isLoggingOut ? 'Logging out...' : 'Log out'}
-                </Button>
-              </>
-            )}
+          {user && (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                asChild
+              >
+                <Link to={ROUTES.HISTORY}>History</Link>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? 'Logging out...' : 'Log out'}
+              </Button>
+            </>
+          )}
           </div>
 
           {/* Mobile Menu Button */}

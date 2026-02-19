@@ -3,7 +3,7 @@ import Layout from '@/components/Layout';
 import HomePage from '@/screens/HomePage';
 import AuthPage from '@/screens/AuthPage';
 import NotFoundPage from '@/screens/NotFoundPage';
-import HistoryPage from '@/screens/HistoryPage';
+import HistoryPage from "@/screens/HistoryPage";
 import { ROUTES } from '@/utils/constants';
 import { ToastContainer } from 'react-toastify';
 import { AuthProvider } from '@/contexts/AuthContext';

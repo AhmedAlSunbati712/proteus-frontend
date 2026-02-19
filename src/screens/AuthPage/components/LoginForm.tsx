@@ -28,9 +28,10 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 interface LoginFormProps {
   onSubmit: (data: LoginFormData) => void | Promise<void>;
   isSubmitting?: boolean;
+  errorMessage?: string | null;
 }
 
-export default function LoginForm({ onSubmit, isSubmitting = false }: LoginFormProps) {
+export default function LoginForm({ onSubmit, isSubmitting = false, errorMessage }: LoginFormProps) {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -46,6 +47,12 @@ export default function LoginForm({ onSubmit, isSubmitting = false }: LoginFormP
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit} className="space-y-4">
+        {errorMessage ? (
+          <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {errorMessage}
+          </p>
+        ) : null}
+
         <FormField
           control={form.control}
           name="email"
