@@ -80,7 +80,7 @@ export default function HistoryPage() {
           <CardHeader>
             <CardTitle>No results yet</CardTitle>
             <CardDescription>
-              Your generated try-on images will appear here after processing completes.
+              No completed try-on outputs were found for your account yet.
             </CardDescription>
           </CardHeader>
         </Card>
