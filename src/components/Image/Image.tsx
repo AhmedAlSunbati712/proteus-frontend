@@ -4,24 +4,26 @@ import { Loader2 } from "lucide-react";
 
 
 interface ImageProps {
-    key: string;
+    objectKey: string;
+    alt?: string;
     className?: string;
 }
 
 
-export default function Image({ key, className }: ImageProps) {
+export default function Image({ objectKey, alt = "image", className }: ImageProps) {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     useEffect(() => {
-        if (key || key != "") {
-            getPresignedDownloadUrl(key).then((url) => {
-                setImageUrl(url);
+        if (objectKey) {
+            getPresignedDownloadUrl(objectKey).then((data) => {
+                const url = typeof data === "string" ? data : data?.url;
+                setImageUrl(url ?? null);
             });
         }
-    }, [key]);
+    }, [objectKey]);
 
     return imageUrl ? (
-        <img src={imageUrl} className={className} />
+        <img src={imageUrl} alt={alt} className={className} />
     ) : (
         <>
             <Loader2 className="w-4 h-4 animate-spin" /> Loading...
