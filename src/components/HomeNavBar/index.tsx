@@ -163,14 +163,19 @@ export default function HomeNavBar({
               </>
             )}
             {user && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-              >
-                {isLoggingOut ? 'Logging out...' : 'Log out'}
-              </Button>
+              <>
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to={ROUTES.HISTORY}>History</Link>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                >
+                  {isLoggingOut ? 'Logging out...' : 'Log out'}
+                </Button>
+              </>
             )}
           </div>
 
@@ -267,15 +272,25 @@ export default function HomeNavBar({
               </>
             )}
             {user && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                className="w-full"
-              >
-                {isLoggingOut ? 'Logging out...' : 'Log out'}
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  asChild
+                  className="w-full"
+                >
+                  <Link to={ROUTES.HISTORY} onClick={closeMobileMenu}>History</Link>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="w-full"
+                >
+                  {isLoggingOut ? 'Logging out...' : 'Log out'}
+                </Button>
+              </>
             )}
           </div>
         </div>
