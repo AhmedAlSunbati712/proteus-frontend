@@ -1,12 +1,16 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/utils/constants';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function scrollToHowItWorks() {
   document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
 }
 
 export default function HeroSection() {
+  const {user, isLoading} = useAuth();
+
   return (
     <section className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-4 sm:px-6">
       {/* Optional subtle gradient background */}
@@ -29,7 +33,7 @@ export default function HeroSection() {
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <Button asChild size="lg" className="font-medium">
-            <Link to={ROUTES.AUTH}>Get Started — Free</Link>
+            <Link to={user ? ROUTES.HISTORY : ROUTES.AUTH}>Get Started — Free</Link>
           </Button>
           <Button
             variant="outline"

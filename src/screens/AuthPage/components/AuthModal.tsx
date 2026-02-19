@@ -47,7 +47,7 @@ export default function AuthModal({
       const response = await loginAsync(data);
       console.log('Login response:', response);
       onOpenChange(false);
-      navigate('/');
+      navigate('/history');
     } catch (error) {
       console.error('Login error:', error);
     } finally {
