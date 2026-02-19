@@ -1,32 +1,11 @@
-import { useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { getVTONS } from "@/api/vton";
 import Image from "@/components/Image/Image";
 import { useAuth } from "@/contexts/AuthContext";
-import { getVTONS } from "@/api/vton";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/utils/constants";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import type { VTON } from "@/types/vton";
-import CreateVTONModal from "./components/CreateVTONModal";
-
-function normalizeVtons(data: unknown): VTON[] {
-  if (Array.isArray(data)) return data as VTON[];
-  if (
-    data &&
-    typeof data === "object" &&
-    Array.isArray((data as { data?: unknown[] }).data)
-  ) {
-    return (data as { data: VTON[] }).data;
-  }
-  return [];
-}
 
 function getDateLabel(value: Date | string | undefined) {
   if (!value) return "Unknown date";
@@ -35,20 +14,22 @@ function getDateLabel(value: Date | string | undefined) {
   return date.toLocaleString();
 }
 
-export default function HistoryPage() {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const { user, isLoading: isAuthLoading } = useAuth();
-  const { data, isLoading: isHistoryLoading, isError, refetch } = getVTONS(
-    user ? { user_id: user.id } : {}
-  );
+function normalizeVtons(data: unknown): VTON[] {
+  if (Array.isArray(data)) return data as VTON[];
+  if (data && typeof data === "object" && Array.isArray((data as { data?: unknown[] }).data)) {
+    return (data as { data: VTON[] }).data;
+  }
+  return [];
+}
 
-  const vtons = useMemo(() => {
-    return normalizeVtons(data)
-      .filter((entry) => entry.user_id === user?.id)
-      .sort(
-        (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
-  }, [data, user?.id]);
+export default function HistoryPage() {
+  const { user, isLoading: isAuthLoading } = useAuth();
+
+  const {
+    data,
+    isLoading: isHistoryLoading,
+    isError,
+  } = getVTONS(user ? { user_id: user.id } : {});
 
   if (isAuthLoading || user === undefined) {
     return (

@@ -28,21 +28,26 @@ export default function AuthModal({
   const navigate = useNavigate();
   const [mode, setMode] = useState<AuthMode>(defaultMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const { mutateAsync: loginAsync } = logIn(
     () => toast.success('Login successful!'),
-    () => toast.error('Login failed!')
+    (message) => {
+      setLoginError(message);
+      toast.error(message);
+    }
   );
   const { mutateAsync: signupAsync } = signUp(
     () => toast.success('Signup successful!'),
-    () => toast.error('Signup failed!')
+    (message) => toast.error(message)
   );
   const handleLogin = async (data: LoginFormData) => {
     setIsSubmitting(true);
+    setLoginError(null);
     try {
       const response = await loginAsync(data);
       console.log('Login response:', response);
       onOpenChange(false);
-      navigate('/');
+      navigate('/history');
     } catch (error) {
       console.error('Login error:', error);
     } finally {
@@ -64,8 +69,14 @@ export default function AuthModal({
     }
   };
 
-  const switchToLogin = () => setMode('login');
-  const switchToSignup = () => setMode('signup');
+  const switchToLogin = () => {
+    setLoginError(null);
+    setMode('login');
+  };
+  const switchToSignup = () => {
+    setLoginError(null);
+    setMode('signup');
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -84,7 +95,11 @@ export default function AuthModal({
         <div className="mt-4">
           {mode === 'login' ? (
             <>
-              <LoginForm onSubmit={handleLogin} isSubmitting={isSubmitting} />
+              <LoginForm
+                onSubmit={handleLogin}
+                isSubmitting={isSubmitting}
+                errorMessage={loginError}
+              />
               <div className="mt-4 text-center text-sm text-muted-foreground">
                 Don't have an account?{' '}
                 <button
