@@ -1,12 +1,40 @@
 import { User } from "@/types/user";
 import axios from "./axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 
 const USER_QUERY_KEY = "users";
 
 interface LoginInfo {
     email: string;
     password: string;
+}
+
+const extractErrorMessage = (error: unknown, fallback: string): string => {
+    if (isAxiosError(error)) {
+        if (!error.response) {
+            return "Cannot reach server. Check that backend/database services are running.";
+        }
+
+        const apiMessage = error.response.data?.error || error.response.data?.message;
+        if (typeof apiMessage === "string" && apiMessage.trim() !== "") {
+            return apiMessage;
+        }
+
+        if (error.response.status === 401) {
+            return "Invalid email or password.";
+        }
+
+        if (error.response.status >= 500) {
+            return "Server error while processing your request. Please try again.";
+        }
+    }
+
+    if (error instanceof Error && error.message.trim() !== "") {
+        return error.message;
+    }
+
+    return fallback;
 }
 
 export const getUser = () => {
@@ -19,7 +47,7 @@ export const getUser = () => {
     });
 }
 
-export const signUp = (onSuccess?: () => void, onError?: () => void) => {
+export const signUp = (onSuccess?: () => void, onError?: (message: string) => void) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (user: Omit<User, "id">) => {
@@ -29,7 +57,7 @@ export const signUp = (onSuccess?: () => void, onError?: () => void) => {
         },
         onError: (error) => {
             console.error(error);
-            if (onError) onError;
+            onError?.(extractErrorMessage(error, "Signup failed."));
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY] });
@@ -38,7 +66,7 @@ export const signUp = (onSuccess?: () => void, onError?: () => void) => {
     });
 }
 
-export const logIn = (onSuccess?: () => void, onError?: () => void) => {
+export const logIn = (onSuccess?: () => void, onError?: (message: string) => void) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (loginInfo: LoginInfo) => {
@@ -48,7 +76,7 @@ export const logIn = (onSuccess?: () => void, onError?: () => void) => {
         },
         onError: (error) => {
             console.error(error);
-            if (onError) onError();
+            onError?.(extractErrorMessage(error, "Login failed."));
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY]});
@@ -57,7 +85,7 @@ export const logIn = (onSuccess?: () => void, onError?: () => void) => {
     })
 }
 
-export const logOut = (onSuccess?: () => void, onError?: () => void) => {
+export const logOut = (onSuccess?: () => void, onError?: (message: string) => void) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async () => {
@@ -67,7 +95,7 @@ export const logOut = (onSuccess?: () => void, onError?: () => void) => {
         },
         onError: (error) => {
             console.error(error);
-            if (onError) onError;
+            onError?.(extractErrorMessage(error, "Logout failed."));
         },
         onSuccess: () => {
             queryClient.setQueryData([USER_QUERY_KEY], null);
