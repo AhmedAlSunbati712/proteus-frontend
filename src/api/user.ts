@@ -1,5 +1,5 @@
 import { User } from "@/types/user";
-import axios from "./axios";
+import axios, { setCredentials, clearCredentials } from "./axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 
@@ -79,10 +79,11 @@ export const logIn = (onSuccess?: () => void, onError?: (message: string) => voi
             onError?.(extractErrorMessage(error, "Login failed."));
         },
         onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY]});
+            if (data?.token) setCredentials(data.token);
+            queryClient.invalidateQueries({ queryKey: [USER_QUERY_KEY] });
             if (onSuccess) onSuccess();
-        }
-    })
+        },
+    });
 }
 
 export const logOut = (onSuccess?: () => void, onError?: (message: string) => void) => {
@@ -98,8 +99,9 @@ export const logOut = (onSuccess?: () => void, onError?: (message: string) => vo
             onError?.(extractErrorMessage(error, "Logout failed."));
         },
         onSuccess: () => {
+            clearCredentials();
             queryClient.setQueryData([USER_QUERY_KEY], null);
             if (onSuccess) onSuccess();
-        }
-    })
+        },
+    });
 }
