@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import Image from "@/components/Image/Image";
 import { useAuth } from "@/contexts/AuthContext";
 import { getVTONS } from "@/api/vton";
+import { connectWebSocket } from "@/utils/websocket";
 import { ROUTES } from "@/utils/constants";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +42,22 @@ export default function HistoryPage() {
   const { data, isLoading: isHistoryLoading, isError, refetch } = getVTONS(
     user ? { user_id: user.id } : {}
   );
+
+  useEffect(() => {
+    if (!user) return;
+
+    const connection = connectWebSocket({
+      onMessage: (payload) => {
+        if (payload.user_id !== user.id) return;
+        if (payload.job_type !== "try_on") return;
+        refetch();
+      },
+    });
+
+    return () => {
+      connection.disconnect();
+    };
+  }, [user, refetch]);
 
   const vtons = useMemo(() => {
     return normalizeVtons(data)
