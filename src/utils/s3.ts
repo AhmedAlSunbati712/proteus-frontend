@@ -1,4 +1,3 @@
-import axios from "../api/axios";
 import { getPresignedUploadUrl } from "@/api/image";
 import { isAllowedImageType, fileToJpegBlob } from "./imageConversion";
 
@@ -14,9 +13,14 @@ export const uploadImage = async (
     const { blob, fileName } = await fileToJpegBlob(image);
     const data = await getPresignedUploadUrl(fileName, "image/jpeg");
     const { url, key } = data;
-    await axios.put(url, blob, {
+    const response = await fetch(url, {
+      method: "PUT",
+      body: blob,
       headers: { "Content-Type": "image/jpeg" },
     });
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.status}`);
+    }
     onSuccess?.();
     return key;
   } catch (error) {
