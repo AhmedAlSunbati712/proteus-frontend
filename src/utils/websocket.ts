@@ -1,6 +1,6 @@
 import axios from "@/api/axios";
 
-const BASE_API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const BASE_API_URL = import.meta.env.VITE_API_URL || "https://proteus-api.live";
 
 function getWsUrl(): string {
   const url = new URL(BASE_API_URL);
