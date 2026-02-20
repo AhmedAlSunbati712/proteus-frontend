@@ -2,22 +2,36 @@
 
 **Event-driven, GPU-accelerated virtual try-on on Linode Kubernetes Engine (LKE).** Open-source stack: LKE, NVIDIA GPU, KEDA, Redis, S3-compatible storage.
 
+**Live site:** [https://proteus-frontend-psi.vercel.app/](https://proteus-frontend-psi.vercel.app/)
+
 ---
 
 ## Hackathon alignment
+
+**Akamai / Linode — Build the Most Creative Open-Source Solution on Linode**
 
 - **Platform:** Linode Kubernetes Engine (LKE); optional Linode Compute for local dev.
 - **Open source:** Stack is open source (Express, React, PyTorch, CatVTON, Redis, KEDA, etc.).
 - **Deployable:** Docker Compose for local run; Kubernetes manifests (namespace, Redis, PostgreSQL, Gateway, Weaver, Arbitrator, optional KEDA) for LKE.
 - **Bonus:** GPU workloads (Weaver: CatVTON on NVIDIA GPU), AI/ML (diffusion-based VTON), advanced Kubernetes (KEDA scaling on Redis queue depth).
 
+**Kilo — Finally Ship It**
+
+- We used **Kilo Code** throughout development to ship faster and with higher quality: **code reviews on pull requests** to catch bugs and improve style before merge, a **frontend specialist** for React/Vite and UX decisions, and an **architect** to help with system design and API choices. Kilo helped us move from idea to a deployed, GPU-backed virtual try-on pipeline on LKE.
+
 ---
 
 ## What Proteus does
 
-- User uploads a **user photo** and an **outfit photo** (any supported image format; HEIC/AVIF converted to JPEG in the browser).
-- Backend runs **GPU inference** (CatVTON) to generate a virtual try-on image.
-- User sees the result in a **history view**; **WebSocket** delivers job completion so the list refreshes automatically when a job finishes.
+Proteus is a **real-time, GPU-powered virtual try-on** system. Users upload a photo of themselves and a photo of an outfit; within seconds they see a synthesized image of themselves wearing that outfit—no physical try-on required. It targets the kind of “see it on me” experience that matters for e‑commerce and personal styling, but implemented as an open-source, event-driven pipeline that runs on Linode Kubernetes Engine and scales with queue depth and optional KEDA.
+
+**User experience.** In the app, you pick two images: a photo of yourself (or a mannequin) and a photo of the garment. You hit create, and your try-on is queued. The history view lists all your past and in-progress try-ons, with status so you can tell what’s still processing. When the GPU job finishes, the list **refreshes automatically**—no reload—thanks to a WebSocket that pushes job-done events from the backend to your browser. You see the new try-on image appear as soon as it’s ready. The experience is built to feel instant and responsive, even when several jobs are in the queue.
+
+**Image handling and upload.** The frontend accepts **any common image format** (JPEG, PNG, WebP, AVIF, HEIC from iPhone, etc.). Non-JPEG images are converted to JPEG in the browser (e.g. heic2any for HEIC, canvas for others) before upload. That keeps the backend and Weaver simple and avoids sending raw HEIC/AVIF through the pipeline. Uploads go **directly to S3** via presigned URLs issued by the Gateway—no file bytes touch the backend, which stays stateless and scalable.
+
+**Pipeline: queue, GPU, and real-time delivery.** After both images are in S3, the frontend creates a VTON record and enqueues a weaver job via the Gateway. A **Weaver** worker (running on an NVIDIA GPU in the cluster) pulls the job from Redis, downloads the images from S3, runs the CatVTON diffusion model, uploads the result image to S3, and publishes a completion event to Redis. The Gateway is subscribed to that event stream and forwards the event to the correct user over **WebSocket**. The frontend refetches the VTON list and displays the new try-on image (via presigned download URL). An **Arbitrator** service watches Redis queue depth and can adjust batch size and other knobs so the system scales under load; optionally, KEDA can scale Weaver replicas based on queue length.
+
+**Why it matters.** The result is a scalable, event-driven pipeline that fits modern cloud-native and AI/ML patterns: stateless API, queue-based workers, GPU inference, real-time feedback. It’s deployable on LKE with GPU nodes and S3-compatible storage (e.g. Linode Object Storage), and we built and shipped it with help from **Kilo Code**—code reviews on PRs, a frontend specialist for React/Vite and UX, and an architect for system design and API choices.
 
 ---
 
