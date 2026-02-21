@@ -4,6 +4,10 @@
 
 **Live site:** [https://proteus-frontend-psi.vercel.app/](https://proteus-frontend-psi.vercel.app/)
 
+**Demo video:** [https://youtu.be/D6bWGE5YtJ0](https://youtu.be/D6bWGE5YtJ0)
+
+[![Watch the Proteus demo video](https://img.youtube.com/vi/D6bWGE5YtJ0/maxresdefault.jpg)](https://youtu.be/D6bWGE5YtJ0)
+
 ---
 
 ## Hackathon alignment
